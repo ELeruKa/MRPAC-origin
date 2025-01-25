@@ -187,15 +187,16 @@ inline void Astarpath::AstarGetSucc(MappingNodePtr currentPtr,
 
 double Astarpath::getHeu(MappingNodePtr node1, MappingNodePtr node2) {
   // 使用数字距离和一种类型的tie_breaker
-
-  double heu;
-  double tie_breaker;
-
-
+  // 使用欧几里得距离作为启发式代价
+  double dx = node1->coord(0) - node2->coord(0);
+  double dy = node1->coord(1) - node2->coord(1);
+  double dz = node1->coord(2) - node2->coord(2);
+  double heu = sqrt(dx * dx + dy * dy + dz * dz);
   
+  double tie_breaker = 1.0 + 1.0 / 1000.0; // 1.001
+  heu *= tie_breaker;
+
   return heu;
-
-  
 }
 
 
@@ -224,19 +225,7 @@ bool Astarpath::AstarSearch(Vector3d start_pt, Vector3d end_pt) {
 
   // 将 Start 节点放在 Open Set 中
   startPtr->g_score = 0;
-  double Astarpath::getHeu(MappingNodePtr node1, MappingNodePtr node2) {
-    // 使用欧几里得距离作为启发式代价
-    double dx = node1->coord(0) - node2->coord(0);
-    double dy = node1->coord(1) - node2->coord(1);
-    double dz = node1->coord(2) - node2->coord(2);
-    double heu = sqrt(dx * dx + dy * dy + dz * dz);
-
-    // 添加 tie_breaker 避免平局
-    double tie_breaker = 1.0 + 1.0 / 1000.0; // 1.001
-    heu *= tie_breaker;
-
-    return heu;
-  }
+  
   startPtr->f_score = getHeu(startPtr, endPtr);
 
   
@@ -313,17 +302,7 @@ bool Astarpath::AstarSearch(Vector3d start_pt, Vector3d end_pt) {
 vector<Vector3d> Astarpath::getPath() {
   vector<Vector3d> path;
   vector<MappingNodePtr> front_path;
-do
-{
-terminatePtr->coord=gridIndex2coord(terminatePtr->index);
-front_path.push_back(terminatePtr);
-terminatePtr=terminatePtr->Father;
-}while(terminatePtr->Father!=NULL);
-vector<Vector3d> Astarpath::getPath() {
-  vector<Vector3d> path;
-  vector<MappingNodePtr> front_path;
 
-  // 从终点开始追溯路径
   MappingNodePtr terminatePtr = this->terminatePtr;
   while (terminatePtr != NULL) {
     front_path.push_back(terminatePtr);
